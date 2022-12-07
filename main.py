@@ -14,34 +14,40 @@ pygame.display.set_caption("SoundWaver")
 icon = pygame.image.load('ICON3.png')
 pygame.display.set_icon(icon)
 
-#Player
-playerImg = pygame.image.load("SoundWaveGuy.png")
-UpscaledplayerImg = pygame.transform.scale(playerImg, (128,128))
-playerX = 370
-playerY = 480
-playerX_change = 0
-playerY_change = 0
-playerCollBox = UpscaledplayerImg.get_rect()
+# Crosshair
+CrosshairImg = Sprite(32, 32, "Crosshair.png")
+CrosshairImg.scale_image(32, 32)
+
+# Player
+player = Sprite(370, 480, "SoundWaveGuy.png")
+player.scale_image(128, 128)
+player.toggle_hitbox(True)
+player.img.get_rect().w = 78  # TODO fix this
+
+# Player Gun
+gun = Sprite(445, 545, "SoundwaveGunRecale.png")
+gun.scale_image(128, 128)
+
+# Player Beam
 
 
 
-def player(x,y):
-    screen.blit(UpscaledplayerImg,(playerX - 64,playerY - 64))
-    pygame.draw.rect(screen, (255, 0, 0), playerCollBox, 2)
 
-#Player Gun
-playerGunImg = pygame.image.load("SoundwaveGunRecale.png")
-UpscaledplayerGun = pygame.transform.scale(playerGunImg, (128,128))
-playerGunX = 440
-playerGunY = 515
-playerGunX_change = 0
-playerGunY_change = 0
-playerGravity = 0
+def moveSprite(sprite):
+    screen.blit(sprite.img, (sprite.x - 64, sprite.y - 64))
 
+    if sprite.show_hitbox:
+        sprite.display_hitbox(screen)
 
-def playerGun(x,y):
-    screen.blit(UpscaledplayerGun,(playerGunX - 64,playerGunY - 64))
+    # Gun Sprite Box
+    pygame.draw.polygon(screen, (0, 232, 46),
+                        [[200, 300], [100, 400],
+                         [100, 200]])
+    mouse_x, mouse_y = pygame.mouse.get_pos()
 
+    # Drawing CrossHair
+    pygame.mouse.set_visible(False)
+    screen.blit(CrosshairImg.img, (mouse_x - 32, mouse_y - 32))
 
 #GAME LOOP
 running = True
@@ -63,13 +69,15 @@ while running:
             if event.key == pygame.K_UP:
                 playerGravity = -10
         if event.type == pygame.KEYUP:
-                if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
-                    playerX_change = 0
-    playerGravity += 1
-    playerX += playerX_change
-    playerY += playerGravity
-    playerGunX += playerX_change
-    playerGunY += playerY_change
+            if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
+                x = 0
+    y += 1  # idk
+
+    player.x += x
+    player.y += y
+    gun.x += x
+    gun.y += y
+
     # OUT OF BOUNDS
     if playerX <= 32:
         playerX = 32
