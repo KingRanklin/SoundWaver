@@ -1,6 +1,8 @@
 import pygame
 
+
 from Sprite import Sprite
+
 
 # Initialize the pygame
 pygame.init()
@@ -8,8 +10,9 @@ pygame.init()
 clock = pygame.time.Clock()
 # Create the screen
 screen = pygame.display.set_mode((800, 600))
+
 # Background
-background = pygame.image.load("BackgroundConcept.png")
+background = pygame.image.load("NewBackground.png")
 
 # Title and Icon
 pygame.display.set_caption("SoundWaver")
@@ -26,14 +29,24 @@ player.scale_image(128, 128)
 player.toggle_hitbox(True)
 player.img.get_rect().w = 78  # TODO fix this
 
+#Jump sounds works
+jumpSound = pygame.mixer.Sound("JumpSound.wav")
+
+
 # Player Gun
 gun = Sprite(445, 545, "SoundwaveGunRecale.png")
 gun.scale_image(128, 128)
 
 # Player Beam
+gunBeam = Sprite(500,500, "GunBeam.png")
+gunBeam.scale_image(128,128)
 
+def play_audio():
 
-
+    file = "SoundWaverSongTest2.mp3"
+    pygame.mixer.music.load(file)
+    pygame.mixer.music.play()
+    pygame.mixer.music.set_volume(0.03)
 
 def moveSprite(sprite):
     screen.blit(sprite.img, (sprite.x - 64, sprite.y - 64))
@@ -41,15 +54,8 @@ def moveSprite(sprite):
     if sprite.show_hitbox:
         sprite.display_hitbox(screen)
 
-    # Gun Sprite Box
-    pygame.draw.polygon(screen, (0, 232, 46),
-                        [[200, 300], [100, 400],
-                         [100, 200]])
-    mouse_x, mouse_y = pygame.mouse.get_pos()
 
-    # Drawing CrossHair
-    pygame.mouse.set_visible(False)
-    screen.blit(CrosshairImg.img, (mouse_x - 32, mouse_y - 32))
+
 
 # GAME LOOP
 running = True
@@ -59,6 +65,18 @@ while running:
     screen.fill((0, 0, 0))
     # adding Background image
     screen.blit(background, (0, 0))
+    #Music doent work unlock holding the top bar TODO
+    play_audio()
+
+
+
+
+
+
+    #Drawing the crosshair
+    mouse_x, mouse_y = pygame.mouse.get_pos()
+    pygame.mouse.set_visible(False)
+    screen.blit(CrosshairImg.img, (mouse_x - 32, mouse_y - 32))
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -69,17 +87,30 @@ while running:
                 x = -3.5
             if event.key == pygame.K_RIGHT:
                 x = 3.5
+
             if event.key == pygame.K_UP:
-                y = -20
+                y = -15
+                jumpSound.play()
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                 x = 0
-    y += 1  # idk
 
+        # Making Beam appear if clicking mouse AND MOVING mouse TODO FIX THIS
+
+        if pygame.mouse.get_pressed() == (1, 0, 0):
+                screen.blit(gunBeam.img, (gun.x - 40, gun.y - 160 ))
+
+
+
+    y += 1  # idk  ## Is this gravity?
+
+    # What does this do
     player.x += x
     player.y += y
     gun.x += x
     gun.y += y
+    #gunBeam.x += x
+    #gunBeam.y += y
 
     # OUT OF BOUNDS
     if player.x <= 32:
