@@ -1,15 +1,17 @@
 import pygame
-#inititlize the pygame
-pygame.init()
-#creating the game clocl
-clock = pygame.time.Clock()
-#create the screen
-screen = pygame.display.set_mode((800, 600))
 
-#Background
+from Sprite import Sprite
+
+# Initialize the pygame
+pygame.init()
+# Creating the game clock
+clock = pygame.time.Clock()
+# Create the screen
+screen = pygame.display.set_mode((800, 600))
+# Background
 background = pygame.image.load("BackgroundConcept.png")
 
-#Title and Icon
+# Title and Icon
 pygame.display.set_caption("SoundWaver")
 icon = pygame.image.load('ICON3.png')
 pygame.display.set_icon(icon)
@@ -49,12 +51,13 @@ def moveSprite(sprite):
     pygame.mouse.set_visible(False)
     screen.blit(CrosshairImg.img, (mouse_x - 32, mouse_y - 32))
 
-#GAME LOOP
+# GAME LOOP
 running = True
+x = y = 0
 while running:
-    #RGB (colors)
+    # RGB (colors)
     screen.fill((0, 0, 0))
-    #adding Background image
+    # adding Background image
     screen.blit(background, (0, 0))
 
     for event in pygame.event.get():
@@ -63,11 +66,11 @@ while running:
         # PLAYER MOVEMENT
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
-                playerX_change = -3.5
+                x = -3.5
             if event.key == pygame.K_RIGHT:
-                playerX_change = 3.5
+                x = 3.5
             if event.key == pygame.K_UP:
-                playerGravity = -10
+                y = -20
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                 x = 0
@@ -79,19 +82,23 @@ while running:
     gun.y += y
 
     # OUT OF BOUNDS
-    if playerX <= 32:
-        playerX = 32
-    elif playerX >= 768:
-        playerX = 768
+    if player.x <= 32:
+        gun.x = 32
+        player.x = 32
+    elif player.x >= 768:
+        player.x = 768
+        gun.x = 768
 
-    if playerY <= 10:
-        playerY = 10
-    elif playerY >= 530:
-        playerY = 530
+    if player.y <= 10:
+        player.y = 10
+        gun.y = 8
+    elif player.y >= 530:
+        player.y = 530
+        gun.y = 580
 
     # DRAWING INTO GAME
-    player(playerX, playerY)
-    playerGun(playerGunX,playerGunY)
+    moveSprite(player)
+    moveSprite(gun)
 
     pygame.display.update()
     clock.tick(60)
