@@ -20,13 +20,17 @@ clock = pygame.time.Clock()
 # define game variables
 screen_width = 1000
 screen_height = 1000
-
+mainMenu = True;
 tile_size = 50
 
 screen = pygame.display.set_mode((screen_width, screen_height))
 
 # Loading Images
 TileBG = pygame.image.load("TileBackground.png")
+mainMenuImg = pygame.image.load("MainMenu.png")
+start_buttonImg = pygame.image.load("StartButton.png")
+exit_buttonImg = pygame.image.load("ExitButton.png")
+
 
 # Title and Icon
 pygame.display.set_caption("SoundWaver")
@@ -53,6 +57,35 @@ gun.scale_image(100, 100)
 # Player Beam
 gunBeam = Sprite(500, 500, "GunBeam.png")
 gunBeam.scale_image(100, 100)
+
+class Button():
+    def __init__(self, x, y, image):
+        self.image = image
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.clicked = False
+
+    def draw(self):
+        action = False
+
+        #get mouse position
+        pos = pygame.mouse.get_pos()
+
+        #check mouseover and clicked conditions
+        if self.rect.collidepoint(pos):
+            if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
+                action = True
+                self.clicked = True
+
+        if pygame.mouse.get_pressed()[0] == 0:
+            self.clicked = False
+
+
+        #draw button
+        screen.blit(self.image, self.rect)
+
+        return action
 
 
 def draw_grid():
@@ -116,7 +149,8 @@ world = World(world_data)
 
 def play_audio():
     file = "SoundWaverSongTest2.mp3"
-    pygame.mixer.music.load(file)
+    file2 = "SoundWaverMainMenu.wav"
+    pygame.mixer.music.load(file2)
     pygame.mixer.music.play(-1)
     pygame.mixer.music.set_volume(0.069)
 
@@ -130,6 +164,11 @@ def moveSprite(sprite):
 
 # Music doesn't work unlock holding the top bar TODO FIX(ED?)
 play_audio()
+
+#creating buttons
+
+start_button = Button(screen_width // 2 - 350, screen_height // 2, start_buttonImg)
+exit_button = Button(screen_width // 2 + 150, screen_height // 2, exit_buttonImg)
 
 # GAME LOOP
 running = True
@@ -146,10 +185,20 @@ screen.fill((0, 0, 0))
 while running:
     # adding Background image
     screen.blit(TileBG, (0, 0))
-    world.draw()
-    draw_grid()
+    if mainMenu == True:
+        screen.blit(mainMenuImg,(0,0))
+        if exit_button.draw():
+            run = False
+        if start_button.draw():
+            mainMenu = False
+    else:
+        world.draw()
 
-    # Drawing the crosshair
+
+
+        draw_grid()
+
+        # Drawing the crosshair
     mouse_x, mouse_y = pygame.mouse.get_pos()
     screen.blit(CrosshairImg.img, (mouse_x, mouse_y))
 
@@ -169,7 +218,7 @@ while running:
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                 x = 0
         # Making Beam appear if clicking mouse
-        mouse_pressed = pygame.mouse.get_pressed()[0]
+    mouse_pressed = pygame.mouse.get_pressed()[0]
 
     # Doing this outside the event listeners
     if mouse_pressed:
@@ -194,10 +243,11 @@ while running:
         gun.rect.bottom = screen_height
         gun.y = 0
 
+    #Collision Detection
     for tile in world.tile_list:
         # check for collision in x direction
         if tile[1].colliderect(player.rect.x + x, player.rect.y, player.rect.w, player.rect.h):
-            player.x = 0
+                    player.x = 0
         # check for collision in y direction
         if tile[1].colliderect(player.rect.x, player.rect.y + y, player.rect.w, player.rect.h):
             # check if below the ground i.e. jumping
@@ -206,7 +256,7 @@ while running:
                 player.y = 0
             # check if above the ground i.e. falling
             elif player.y >= 0:
-                y = tile[1].top - player.rect.bottom
+                player.y = tile[1].top - player.rect.bottom
                 player.y = 0
     # if player.x <= 32:
     # gun.x = 32
