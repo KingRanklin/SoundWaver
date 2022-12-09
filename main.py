@@ -11,8 +11,8 @@ clock = pygame.time.Clock()
 # Fix Background Music - Done~BM
 # Fix GunBeam with Mouse Press - Done~BM
 # Add collision - how do we start?
-# Add tiles?? Gonna be reworking game to be tile based.
-# Need to set up world class and tile class
+# Add tiles?? Gonna be reworking game to be tile based.      Done.Game is now tile based~DG
+# Need to set up world class and tile class Done~DG
 
 # Create the screen
 
@@ -41,7 +41,7 @@ CrosshairImg.scale_image(32, 32)
 player = Sprite(370, 480, "SoundWaveGuy.png")
 player.scale_image(100, 150)
 player.toggle_hitbox(True)
-player.img.get_rect().w = 78  # TODO fix this
+player.rect.w = 85
 
 # Jump sounds works
 jumpSound = pygame.mixer.Sound("JumpSound.wav")
@@ -52,7 +52,7 @@ gun.scale_image(100, 100)
 
 # Player Beam
 gunBeam = Sprite(500, 500, "GunBeam.png")
-gunBeam.scale_image(128, 128)
+gunBeam.scale_image(100, 100)
 
 
 def draw_grid():
@@ -117,7 +117,7 @@ world = World(world_data)
 def play_audio():
     file = "SoundWaverSongTest2.mp3"
     pygame.mixer.music.load(file)
-    pygame.mixer.music.play()
+    pygame.mixer.music.play(-1)
     pygame.mixer.music.set_volume(0.069)
 
 
@@ -135,7 +135,7 @@ play_audio()
 running = True
 x = y = 0
 # Constant, higher number means more gravity
-gravity = 4
+gravity = 1
 # Boolean for determining if mouse is pressed down
 mouse_pressed = False
 # Hide mouse
@@ -159,12 +159,12 @@ while running:
         # PLAYER MOVEMENT
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
-                x = -3.5
+                x = -4
             if event.key == pygame.K_RIGHT:
-                x = 3.5
+                x = 4
             if event.key == pygame.K_UP:
                 jumpSound.play()
-                y = -45
+                y = -20
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                 x = 0
@@ -173,8 +173,7 @@ while running:
 
     # Doing this outside the event listeners
     if mouse_pressed:
-        gunBeam.rect.center = (mouse_x, mouse_y)
-        screen.blit(gunBeam.img, gunBeam.rect)
+        screen.blit(gunBeam.img, (gun.rect.x + 32, gun.rect.y - 75 ))
 
     # Apply gravity to y-axis
     y += gravity
@@ -182,16 +181,33 @@ while running:
     # What does this do. Updates player coordinates?
     player.rect.x += x
     player.rect.y += y
-    # gun.x += x
-    # gun.y += y
-    # gunBeam.x += x
-    # gunBeam.y += y
+    gun.rect.x += x
+    gun.rect.y += y
+    #gunBeam.x += x
+    #gunBeam.y += y
 
     # OUT OF BOUNDS
     if player.rect.bottom > screen_height:
         player.rect.bottom = screen_height
         player.y = 0
+    if gun.rect.bottom > screen_height:
+        gun.rect.bottom = screen_height
+        gun.y = 0
 
+    for tile in world.tile_list:
+        # check for collision in x direction
+        if tile[1].colliderect(player.rect.x + x, player.rect.y, player.rect.w, player.rect.h):
+            player.x = 0
+        # check for collision in y direction
+        if tile[1].colliderect(player.rect.x, player.rect.y + y, player.rect.w, player.rect.h):
+            # check if below the ground i.e. jumping
+            if player.y < 0:
+                player.y = tile[1].bottom - player.rect.top
+                player.y = 0
+            # check if above the ground i.e. falling
+            elif player.y >= 0:
+                y = tile[1].top - player.rect.bottom
+                player.y = 0
     # if player.x <= 32:
     # gun.x = 32
     # player.x = 32
@@ -208,7 +224,7 @@ while running:
 
     # DRAWING INTO GAME
     moveSprite(player)
-    #moveSprite(gun)
+    moveSprite(gun)
 
     pygame.display.update()
     clock.tick(60)

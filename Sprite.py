@@ -13,7 +13,7 @@ class Sprite(object):
         self.show_hitbox = bool
 
     def display_hitbox(self, screen):
-        pygame.draw.rect(screen, (255, 0, 0), self.img.get_rect(), 2)
+        pygame.draw.rect(screen, (255, 0, 0), self.rect, 2)
 
     def scale_image(self, x, y):
         self.img = pygame.transform.scale(self.img, (x, y))
