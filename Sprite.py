@@ -9,8 +9,6 @@ class Sprite(object):
         self.show_hitbox = False
         self.rect = pygame.Rect(self.x, self.y, 32, 32)  # The rect for collision detection.
 
-
-
     def toggle_hitbox(self, bool):
         self.show_hitbox = bool
 
@@ -19,6 +17,8 @@ class Sprite(object):
 
     def scale_image(self, x, y):
         self.img = pygame.transform.scale(self.img, (x, y))
+        self.rect.update(self.x, self.y, x, y)
+
 class staticObject:
     def __init__(self, x, y, rect):
         self.x = x
