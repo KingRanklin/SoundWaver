@@ -188,7 +188,7 @@ while running:
     if mainMenu == True:
         screen.blit(mainMenuImg,(0,0))
         if exit_button.draw():
-            run = False
+            running = False
         if start_button.draw():
             mainMenu = False
     else:
