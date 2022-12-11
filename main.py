@@ -8,11 +8,9 @@ pygame.init()
 clock = pygame.time.Clock()
 
 # MAJOR TODO LIST
-# Fix Background Music - Done~BM
-# Fix GunBeam with Mouse Press - Done~BM
-# Add collision - how do we start?
-# Add tiles?? Gonna be reworking game to be tile based.      Done.Game is now tile based~DG
-# Need to set up world class and tile class Done~DG
+# Make background music change based on what level you are on.
+# Fix Collision.
+# Fix Main Menu. Player loads in the main menu.
 
 # Create the screen
 
@@ -193,9 +191,6 @@ while running:
             mainMenu = False
     else:
         world.draw()
-
-
-
         draw_grid()
 
         # Drawing the crosshair
