@@ -24,36 +24,36 @@ tile_size = 50
 screen = pygame.display.set_mode((screen_width, screen_height))
 
 # Loading Images
-TileBG = pygame.image.load("TileBackground.png")
-mainMenuImg = pygame.image.load("MainMenu.png")
-start_buttonImg = pygame.image.load("StartButton.png")
-exit_buttonImg = pygame.image.load("ExitButton.png")
+TileBG = pygame.image.load("Assets/Images/TileBackground.png")
+mainMenuImg = pygame.image.load("Assets/Images/MainMenu.png")
+start_buttonImg = pygame.image.load("Assets/Images/StartButton.png")
+exit_buttonImg = pygame.image.load("Assets/Images/ExitButton.png")
 
 
 # Title and Icon
 pygame.display.set_caption("SoundWaver")
-icon = pygame.image.load('ICON3.png')
+icon = pygame.image.load('Assets/Images/ICON3.png')
 pygame.display.set_icon(icon)
 
 # Crosshair
-CrosshairImg = Sprite(32, 32, "Crosshair.png")
+CrosshairImg = Sprite(32, 32, "Assets/Images/Crosshair.png")
 CrosshairImg.scale_image(32, 32)
 
 # Player
-player = Sprite(370, 480, "SoundWaveGuy.png")
+player = Sprite(370, 480, "Assets/Images/SoundWaveGuy.png")
 player.scale_image(100, 150)
 player.toggle_hitbox(True)
 player.rect.w = 85
 
 # Jump sounds works
-jumpSound = pygame.mixer.Sound("JumpSound.wav")
+jumpSound = pygame.mixer.Sound("Assets/Audio/Sounds/JumpSound.wav")
 
 # Player Gun
-gun = Sprite(445, 545, "SoundwaveGunRecale.png")
+gun = Sprite(445, 545, "Assets/Images/SoundwaveGunRecale.png")
 gun.scale_image(100, 100)
 
 # Player Beam
-gunBeam = Sprite(500, 500, "GunBeam.png")
+gunBeam = Sprite(500, 500, "Assets/Images/GunBeam.png")
 gunBeam.scale_image(100, 100)
 
 class Button():
@@ -97,8 +97,8 @@ class World:
         self.tile_list = []
 
         # load images
-        dirt_img = pygame.image.load("Dirt.png")
-        grass_img = pygame.image.load("GrassyDirt.png")
+        dirt_img = pygame.image.load("Assets/Images/Dirt.png")
+        grass_img = pygame.image.load("Assets/Images/GrassyDirt.png")
 
         row_count = 0
         for row in data:
@@ -146,8 +146,8 @@ world = World(world_data)
 
 
 def play_audio():
-    file = "SoundWaverSongTest2.mp3"
-    file2 = "SoundWaverMainMenu.wav"
+    file = "Assets/Audio/Soundtrack/SoundWaverSongTest2.mp3"
+    file2 = "Assets/Audio/Soundtrack/SoundWaverMainMenu.wav"
     pygame.mixer.music.load(file2)
     pygame.mixer.music.play(-1)
     pygame.mixer.music.set_volume(0.069)
