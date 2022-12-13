@@ -39,8 +39,7 @@ CrosshairImg = Sprite(32, 32, "Assets/Images/Crosshair.png")
 CrosshairImg.scale_image(32, 32)
 
 # Player
-player = Sprite(370, 480, "Assets/Images/SoundWaveGuy.png")
-player.scale_image(100, 150)
+player = Sprite(80, 800, "Assets/Images/SoundWaveGuy.png", 100, 150)
 player.toggle_hitbox(True)
 player.rect.w = 85
 
@@ -48,14 +47,12 @@ player.rect.w = 85
 jumpSound = pygame.mixer.Sound("Assets/Audio/Sounds/JumpSound.wav")
 
 # Player Gun
-gun = Sprite(445, 545, "Assets/Images/SoundwaveGunRecale.png")
-gun.scale_image(100, 100)
+gun = Sprite(95, 800, "Assets/Images/SoundwaveGunRecale.png", 100, 100)
 gun.rect.x = player.rect.x + 70  # TODO Temp workaround, find a better way to align gun w/ player
 # See https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group (maybe use this for world too?)
 
 # Player Beam
-gunBeam = Sprite(500, 500, "Assets/Images/GunBeam.png")
-gunBeam.scale_image(100, 100)
+gunBeam = Sprite(500, 500, "Assets/Images/GunBeam.png", 100, 100)
 
 
 class Button():
@@ -230,14 +227,6 @@ while running:
     # Apply gravity to y-axis
     y += gravity
 
-    # What does this do. Updates player coordinates?
-    player.rect.x += x
-    player.rect.y += y
-    gun.rect.x += x
-    gun.rect.y += y
-    # gunBeam.x += x
-    # gunBeam.y += y
-
     # OUT OF BOUNDS
     if player.rect.bottom > screen_height:
         player.rect.bottom = screen_height
@@ -255,14 +244,17 @@ while running:
         if tile.rect.colliderect(player.rect.x, player.rect.y + y, player.rect.w, player.rect.h):
             # check if below the ground i.e. jumping
             if player.rect.y < 0:
-                # player.rect.y = tile.rect.bottom - player.rect.top
-                # move_sprite(player)
+                #player.rect.y = tile.rect.bottom - player.rect.top
                 y = 0
             # check if above the ground i.e. falling
             elif player.rect.y >= 0:
-                # player.rect.y = tile.rect.top - player.rect.bottom
-                # move_sprite(player)
+                #player.rect.y = tile.rect.top - player.rect.bottom
                 y = 0
+
+    player.rect.x += x
+    player.rect.y += y
+    gun.rect.x += x
+    gun.rect.y += y
 
     # DRAWING INTO GAME
     move_sprite(player)
@@ -271,21 +263,3 @@ while running:
     # Update display
     pygame.display.update()
     clock.tick(60)
-
-'''
-    # Collision Detection
-    for tile in world.tile_list:
-        # check for collision in x direction
-        if tile[1].colliderect(player.rect.x + x, player.rect.y, player.rect.w, player.rect.h):
-                player.x = 0
-        # check for collision in y direction
-        if tile[1].colliderect(player.rect.x, player.rect.y + y, player.rect.w, player.rect.h):
-            # check if below the ground i.e. jumping
-            if player.y < 0:
-                player.y = tile[1].bottom - player.rect.top
-                player.y = 0
-            # check if above the ground i.e. falling
-            elif player.y >= 0:
-                player.y = tile[1].top - player.rect.bottom
-                player.y = 0
-'''

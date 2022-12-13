@@ -3,7 +3,7 @@ import pygame
 
 class Sprite(pygame.sprite.Sprite):
 
-    def __init__(self, x, y, img_path):
+    def __init__(self, x, y, img_path, w_scaling=None, h_scaling=None):
         """
         Constructor for custom Sprite class.
 
@@ -17,7 +17,10 @@ class Sprite(pygame.sprite.Sprite):
 
         if img_path is not None:
             self.image = pygame.image.load(img_path)
-            self.rect = self.image.get_rect()
+            if w_scaling is not None and h_scaling is not None:
+                self.scale_image(w_scaling, h_scaling)
+            else:
+                self.rect = self.image.get_rect()
             self.rect.x, self.rect.y = x, y
 
         # TODO this should be removed at some point :\
