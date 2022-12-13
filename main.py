@@ -12,6 +12,9 @@ clock = pygame.time.Clock()
 # Fix Collision.
 # Fix Main Menu. Player loads in the main menu.
 
+
+
+
 # Create the screen
 
 
@@ -19,6 +22,8 @@ clock = pygame.time.Clock()
 screen_width = 1000
 screen_height = 1000
 mainMenu = True
+level1 = False
+level2 = False
 tile_size = 50
 
 screen = pygame.display.set_mode((screen_width, screen_height))
@@ -30,7 +35,7 @@ start_buttonImg = pygame.image.load("Assets/Images/StartButton.png")
 exit_buttonImg = pygame.image.load("Assets/Images/ExitButton.png")
 
 # Title and Icon
-pygame.display.set_caption("SoundWaver")
+pygame.display.set_caption("SonusScape")
 icon = pygame.image.load('Assets/Images/ICON3.png')
 pygame.display.set_icon(icon)
 
@@ -133,8 +138,8 @@ world_data = [
     [1, 2, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
     [1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2, 0, 0, 0, 0, 1],
-    [1, 0, 2, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 2, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 3, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 3, 0, 0, 0, 0, 1],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 1],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2, 0, 0, 0, 0, 2, 0, 1],
@@ -147,13 +152,11 @@ world_data = [
 ]
 
 
-def play_audio():
-    file = "Assets/Audio/Soundtrack/SoundWaverSongTest2.mp3"
-    file2 = "Assets/Audio/Soundtrack/SoundWaverMainMenu.wav"
-    pygame.mixer.music.load(file2)
+## MUSIC
+def play_music():
+    pygame.mixer.music.load("Assets/Audio/Soundtrack/CrystalCaverns.wav")
     pygame.mixer.music.play(-1)
     pygame.mixer.music.set_volume(0.069)
-
 
 def move_sprite(sprite):
     screen.blit(sprite.image, sprite.rect)  # (100, screen_height - 200))
@@ -163,7 +166,9 @@ def move_sprite(sprite):
 
 
 # Music doesn't work unlock holding the top bar TODO FIX(ED?)
-play_audio()
+if mainMenu:
+    play_music()
+
 
 # creating buttons
 start_button = Button(screen_width // 2 - 350, screen_height // 2, start_buttonImg)
