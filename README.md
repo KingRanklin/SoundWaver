@@ -9,9 +9,11 @@
 SonusScape is a 2D Platformer where you take control of a blind robot and use a hand-held Sonar device in order to reveal the levels and solve puzzles.
 
 
+<p align="center">
+  <img src="Assets/Images/SoundWaveGuy.png"/>
+</p>
 
 
-![SoundWave Robot](Assets/Images/SoundWaveGuy.png)
 ## Developer's Info:
 IDE: [PyCharm Community Edition](https://www.jetbrains.com/pycharm/)
 
