@@ -18,7 +18,7 @@ clock = pygame.time.Clock()
 # define game variables
 screen_width = 1000
 screen_height = 1000
-mainMenu = True;
+mainMenu = True
 tile_size = 50
 
 screen = pygame.display.set_mode((screen_width, screen_height))
@@ -28,7 +28,6 @@ TileBG = pygame.image.load("Assets/Images/TileBackground.png")
 mainMenuImg = pygame.image.load("Assets/Images/MainMenu.png")
 start_buttonImg = pygame.image.load("Assets/Images/StartButton.png")
 exit_buttonImg = pygame.image.load("Assets/Images/ExitButton.png")
-
 
 # Title and Icon
 pygame.display.set_caption("SoundWaver")
@@ -51,10 +50,13 @@ jumpSound = pygame.mixer.Sound("Assets/Audio/Sounds/JumpSound.wav")
 # Player Gun
 gun = Sprite(445, 545, "Assets/Images/SoundwaveGunRecale.png")
 gun.scale_image(100, 100)
+gun.rect.x = player.rect.x + 70  # TODO Temp workaround, find a better way to align gun w/ player
+# See https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group (maybe use this for world too?)
 
 # Player Beam
 gunBeam = Sprite(500, 500, "Assets/Images/GunBeam.png")
 gunBeam.scale_image(100, 100)
+
 
 class Button():
     def __init__(self, x, y, image):
@@ -67,20 +69,19 @@ class Button():
     def draw(self):
         action = False
 
-        #get mouse position
+        # get mouse position
         pos = pygame.mouse.get_pos()
 
-        #check mouseover and clicked conditions
+        # check mouseover and clicked conditions
         if self.rect.collidepoint(pos):
-            if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
+            if pygame.mouse.get_pressed()[0] == 1 and self.clicked is False:
                 action = True
                 self.clicked = True
 
         if pygame.mouse.get_pressed()[0] == 0:
             self.clicked = False
 
-
-        #draw button
+        # draw button
         screen.blit(self.image, self.rect)
 
         return action
@@ -94,30 +95,36 @@ def draw_grid():
 
 class World:
     def __init__(self, data):
+        # Array of Sprites
         self.tile_list = []
 
         # load images
-        dirt_img = pygame.image.load("Assets/Images/Dirt.png")
-        grass_img = pygame.image.load("Assets/Images/GrassyDirt.png")
+        dirt_path = "Assets/Images/Dirt.png"
+        grass_path = "Assets/Images/GrassyDirt.png"
+        dirt_img = pygame.image.load(dirt_path)
+        grass_img = pygame.image.load(grass_path)
 
         row_count = 0
         for row in data:
             col_count = 0
             for tile in row:
                 if tile == 1 or tile == 2:
-                    img = pygame.transform.scale(dirt_img if tile == 1 else grass_img, (tile_size, tile_size))
-                    img_rect = img.get_rect()
-                    img_rect.x = col_count * tile_size
-                    img_rect.y = row_count * tile_size
-                    tile = (img, img_rect)
-                    self.tile_list.append(tile)
+                    sprite = Sprite(col_count * tile_size, row_count * tile_size,
+                                    dirt_path if tile == 1 else grass_path)
+                    sprite.image = pygame.transform.scale(sprite.image, (50, 50))
+                    # TODO calling sprite.scale_image breaks the x,y once self.rect = self.image.get_rect() is called... why??
+                    self.tile_list.append(sprite)
                 col_count += 1
             row_count += 1
 
     def draw(self):
-        for tile in self.tile_list:
-            screen.blit(tile[0], tile[1])
+        for tile_sprite in self.tile_list:
+            screen.blit(tile_sprite.image, tile_sprite.rect)
 
+
+#     wall = Sprite()
+#     wall_group = pygame.sprite.Group()
+#     wall_group.add(wall)
 
 world_data = [
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -142,8 +149,6 @@ world_data = [
     [1, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 ]
 
-world = World(world_data)
-
 
 def play_audio():
     file = "Assets/Audio/Soundtrack/SoundWaverSongTest2.mp3"
@@ -153,8 +158,8 @@ def play_audio():
     pygame.mixer.music.set_volume(0.069)
 
 
-def moveSprite(sprite):
-    screen.blit(sprite.img, sprite.rect)  # (100, screen_height - 200))
+def move_sprite(sprite):
+    screen.blit(sprite.image, sprite.rect)  # (100, screen_height - 200))
 
     if sprite.show_hitbox:
         sprite.display_hitbox(screen)
@@ -163,8 +168,7 @@ def moveSprite(sprite):
 # Music doesn't work unlock holding the top bar TODO FIX(ED?)
 play_audio()
 
-#creating buttons
-
+# creating buttons
 start_button = Button(screen_width // 2 - 350, screen_height // 2, start_buttonImg)
 exit_button = Button(screen_width // 2 + 150, screen_height // 2, exit_buttonImg)
 
@@ -179,23 +183,26 @@ mouse_pressed = False
 pygame.mouse.set_visible(False)
 # RGB (colors)
 screen.fill((0, 0, 0))
+# World object
+world = World(world_data)
 
 while running:
     # adding Background image
     screen.blit(TileBG, (0, 0))
-    if mainMenu == True:
-        screen.blit(mainMenuImg,(0,0))
+    if mainMenu is True:
+        screen.blit(mainMenuImg, (0, 0))
         if exit_button.draw():
             running = False
         if start_button.draw():
             mainMenu = False
     else:
-        world.draw()
+        for tile in world.tile_list:
+            screen.blit(tile.image, tile.rect)
         draw_grid()
 
         # Drawing the crosshair
     mouse_x, mouse_y = pygame.mouse.get_pos()
-    screen.blit(CrosshairImg.img, (mouse_x, mouse_y))
+    screen.blit(CrosshairImg.image, (mouse_x, mouse_y))
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -212,12 +219,13 @@ while running:
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                 x = 0
-        # Making Beam appear if clicking mouse
+
+    # Making Beam appear if clicking mouse
     mouse_pressed = pygame.mouse.get_pressed()[0]
 
     # Doing this outside the event listeners
     if mouse_pressed:
-        screen.blit(gunBeam.img, (gun.rect.x + 32, gun.rect.y - 75 ))
+        screen.blit(gunBeam.image, (gun.rect.x + 32, gun.rect.y - 75))
 
     # Apply gravity to y-axis
     y += gravity
@@ -227,8 +235,8 @@ while running:
     player.rect.y += y
     gun.rect.x += x
     gun.rect.y += y
-    #gunBeam.x += x
-    #gunBeam.y += y
+    # gunBeam.x += x
+    # gunBeam.y += y
 
     # OUT OF BOUNDS
     if player.rect.bottom > screen_height:
@@ -238,11 +246,38 @@ while running:
         gun.rect.bottom = screen_height
         gun.y = 0
 
-    #Collision Detection
+    # TODO Rework this to use https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group
+    # Collision Detection
+    for tile in world.tile_list:
+        if tile.rect.colliderect(player.rect.x + x, player.rect.y, player.rect.w, player.rect.h):
+            # player.rect.x = 1
+            x = 0
+        if tile.rect.colliderect(player.rect.x, player.rect.y + y, player.rect.w, player.rect.h):
+            # check if below the ground i.e. jumping
+            if player.rect.y < 0:
+                # player.rect.y = tile.rect.bottom - player.rect.top
+                # move_sprite(player)
+                y = 0
+            # check if above the ground i.e. falling
+            elif player.rect.y >= 0:
+                # player.rect.y = tile.rect.top - player.rect.bottom
+                # move_sprite(player)
+                y = 0
+
+    # DRAWING INTO GAME
+    move_sprite(player)
+    move_sprite(gun)
+
+    # Update display
+    pygame.display.update()
+    clock.tick(60)
+
+'''
+    # Collision Detection
     for tile in world.tile_list:
         # check for collision in x direction
         if tile[1].colliderect(player.rect.x + x, player.rect.y, player.rect.w, player.rect.h):
-                    player.x = 0
+                player.x = 0
         # check for collision in y direction
         if tile[1].colliderect(player.rect.x, player.rect.y + y, player.rect.w, player.rect.h):
             # check if below the ground i.e. jumping
@@ -253,23 +288,4 @@ while running:
             elif player.y >= 0:
                 player.y = tile[1].top - player.rect.bottom
                 player.y = 0
-    # if player.x <= 32:
-    # gun.x = 32
-    # player.x = 32
-    # elif player.x >= 768:
-    # player.x = 768
-    # gun.x = 768
-
-    # if player.y <= 10:
-    # player.y = 10
-    # gun.y = 8
-    # elif player.y >= 530:
-    # player.y = 530
-    # gun.y = 580
-
-    # DRAWING INTO GAME
-    moveSprite(player)
-    moveSprite(gun)
-
-    pygame.display.update()
-    clock.tick(60)
+'''
